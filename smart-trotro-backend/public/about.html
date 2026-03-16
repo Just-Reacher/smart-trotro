@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About — Smart-Trotro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --blue: #1a56db; --blue-dark: #1340a8; --blue-light: #e8effc;
+            --orange: #f27b20; --orange-dark: #d96a10; --orange-light: #fff3e8;
+            --dark: #111827; --gray-900: #1f2937; --gray-700: #374151;
+            --gray-500: #6b7280; --gray-300: #d1d5db; --gray-100: #f3f4f6;
+            --white: #ffffff;
+            --shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 25px -3px rgba(0,0,0,0.12), 0 4px 6px -4px rgba(0,0,0,0.07);
+            --shadow-xl: 0 20px 40px -5px rgba(0,0,0,0.15);
+            --radius: 12px; --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Inter', system-ui, sans-serif; color: var(--dark); line-height: 1.6; overflow-x: hidden; background: var(--white); }
+        a { text-decoration: none; color: inherit; } img { max-width: 100%; display: block; } ul { list-style: none; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+        .btn { display: inline-flex; align-items: center; gap: 8px; padding: 14px 32px; border-radius: 10px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: var(--transition); border: none; font-family: inherit; }
+        .btn-primary { background: var(--orange); color: #fff; box-shadow: 0 4px 14px rgba(242,123,32,0.35); }
+        .btn-primary:hover { background: var(--orange-dark); transform: translateY(-2px); }
+
+        /* NAV */
+        .nav { position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; background: rgba(255,255,255,0.92); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(0,0,0,0.06); transition: var(--transition); }
+        .nav.scrolled { box-shadow: var(--shadow); }
+        .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 72px; }
+        .logo { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 1.5rem; color: var(--blue); }
+        .logo span { color: var(--orange); }
+        .logo svg { width: 36px; height: 36px; }
+        .nav-links { display: flex; align-items: center; gap: 8px; }
+        .nav-links a { padding: 8px 16px; border-radius: 8px; font-weight: 500; font-size: 0.95rem; color: var(--gray-700); transition: var(--transition); }
+        .nav-links a:hover, .nav-links a.active { color: var(--blue); background: var(--blue-light); }
+        .nav-links .btn-login { color: var(--blue); border: 2px solid var(--blue); border-radius: 8px; padding: 8px 20px; font-weight: 600; margin-left: 8px; }
+        .nav-links .btn-login:hover { background: var(--blue); color: #fff; }
+        .nav-links .btn-register { background: var(--orange); color: #fff; border-radius: 8px; padding: 10px 22px; font-weight: 600; }
+        .nav-links .btn-register:hover { background: var(--orange-dark); }
+        .hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 4px; z-index: 1001; }
+        .hamburger span { display: block; width: 26px; height: 3px; background: var(--dark); border-radius: 3px; transition: var(--transition); }
+        .hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 6px); }
+        .hamburger.active span:nth-child(2) { opacity: 0; }
+        .hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(5px, -6px); }
+        .mobile-menu { display: none; position: fixed; top: 72px; left: 0; width: 100%; background: var(--white); padding: 24px; border-bottom: 1px solid var(--gray-300); box-shadow: var(--shadow-lg); z-index: 999; }
+        .mobile-menu.active { display: block; animation: slideDown 0.3s ease; }
+        .mobile-menu a { display: block; padding: 14px 16px; font-weight: 500; border-radius: 8px; color: var(--gray-700); transition: var(--transition); font-size: 1.05rem; }
+        .mobile-menu a:hover { background: var(--blue-light); color: var(--blue); }
+        .mobile-menu .mobile-auth { display: flex; gap: 12px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--gray-300); }
+        .mobile-menu .mobile-auth a { flex: 1; text-align: center; }
+        .mobile-menu .mobile-auth .btn-login { border: 2px solid var(--blue); color: var(--blue); }
+        .mobile-menu .mobile-auth .btn-register { background: var(--orange); color: #fff; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* PAGE HERO */
+        .page-hero {
+            padding: 140px 0 80px;
+            background: linear-gradient(135deg, #f0f4ff 0%, #fef6ee 50%, #f0f4ff 100%);
+            text-align: center; position: relative; overflow: hidden;
+        }
+        .page-hero::before {
+            content: ''; position: absolute; top: -100px; right: -100px;
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(242,123,32,0.08) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        .breadcrumb { display: flex; justify-content: center; gap: 8px; margin-bottom: 16px; font-size: 0.9rem; color: var(--gray-500); }
+        .breadcrumb a { color: var(--blue); font-weight: 500; }
+        .breadcrumb .sep { color: var(--gray-300); }
+        .page-hero h1 { font-size: clamp(2rem, 4vw, 3rem); font-weight: 900; margin-bottom: 16px; }
+        .page-hero h1 .highlight { color: var(--orange); }
+        .page-hero p { font-size: 1.15rem; color: var(--gray-500); max-width: 600px; margin: 0 auto; line-height: 1.7; }
+
+        /* MISSION VISION */
+        .mission-vision { padding: 100px 0; }
+        .mv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+        .mv-img { border-radius: 20px; overflow: hidden; box-shadow: var(--shadow-lg); aspect-ratio: 4/3; background: linear-gradient(135deg, var(--blue), #60a5fa); position: relative; }
+        .mv-img img { width: 100%; height: 100%; object-fit: cover; }
+        .mv-img .overlay { position: absolute; inset: 0; background: linear-gradient(135deg, rgba(26,86,219,0.1) 0%, rgba(242,123,32,0.05) 100%); }
+        .section-label { display: inline-flex; align-items: center; gap: 8px; background: var(--blue-light); color: var(--blue); font-weight: 600; padding: 6px 16px; border-radius: 50px; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 16px; }
+        .section-title { font-size: clamp(1.8rem, 3.5vw, 2.5rem); font-weight: 800; margin-bottom: 20px; color: var(--dark); }
+        .mv-content p { color: var(--gray-500); margin-bottom: 16px; line-height: 1.7; font-size: 1.05rem; }
+        .mv-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 32px; }
+        .mv-card { background: var(--gray-100); border-radius: 16px; padding: 24px; transition: var(--transition); }
+        .mv-card:hover { background: var(--blue-light); transform: translateY(-2px); }
+        .mv-card .icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; }
+        .mv-card .icon.blue { background: var(--blue); color: #fff; }
+        .mv-card .icon.orange { background: var(--orange); color: #fff; }
+        .mv-card h4 { font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
+        .mv-card p { font-size: 0.9rem; color: var(--gray-500); margin: 0; line-height: 1.5; }
+
+        /* IMPROVEMENTS */
+        .improvements { padding: 100px 0; background: var(--gray-100); }
+        .improvements .section-header { text-align: center; margin-bottom: 64px; }
+        .improvements .section-header .section-desc { max-width: 600px; margin: 0 auto; color: var(--gray-500); font-size: 1.05rem; line-height: 1.7; }
+        .improve-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
+        .improve-card {
+            background: var(--white); border-radius: 20px; padding: 40px 32px;
+            text-align: center; transition: var(--transition);
+            border: 1px solid transparent; position: relative; overflow: hidden;
+        }
+        .improve-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-xl); }
+        .improve-card .ic-icon {
+            width: 72px; height: 72px; border-radius: 20px;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 24px; font-size: 32px;
+        }
+        .improve-card .ic-icon.blue { background: var(--blue-light); color: var(--blue); }
+        .improve-card .ic-icon.orange { background: var(--orange-light); color: var(--orange); }
+        .improve-card .ic-icon.green { background: #ecfdf5; color: #059669; }
+        .improve-card h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: 12px; }
+        .improve-card p { color: var(--gray-500); font-size: 0.95rem; line-height: 1.6; }
+
+        /* BENEFITS */
+        .benefits { padding: 100px 0; }
+        .benefits .section-header { text-align: center; margin-bottom: 64px; }
+        .benefits .section-header .section-desc { max-width: 600px; margin: 0 auto; color: var(--gray-500); font-size: 1.05rem; line-height: 1.7; }
+        .benefit-tabs { display: flex; justify-content: center; gap: 12px; margin-bottom: 48px; flex-wrap: wrap; }
+        .benefit-tab {
+            padding: 12px 28px; border-radius: 50px; font-weight: 600; font-size: 0.95rem;
+            cursor: pointer; transition: var(--transition); border: 2px solid var(--gray-300);
+            background: transparent; color: var(--gray-700); font-family: inherit;
+        }
+        .benefit-tab.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+        .benefit-tab:hover:not(.active) { border-color: var(--blue); color: var(--blue); }
+        .benefit-content { display: none; animation: fadeIn 0.5s ease; }
+        .benefit-content.active { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .benefit-text h3 { font-size: 1.5rem; font-weight: 800; margin-bottom: 16px; }
+        .benefit-text p { color: var(--gray-500); margin-bottom: 24px; line-height: 1.7; }
+        .benefit-list { display: flex; flex-direction: column; gap: 16px; }
+        .benefit-item { display: flex; gap: 14px; align-items: flex-start; }
+        .benefit-item .bi-icon { width: 40px; height: 40px; border-radius: 10px; background: var(--orange-light); color: var(--orange); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .benefit-item .bi-text h4 { font-size: 0.95rem; font-weight: 600; margin-bottom: 4px; }
+        .benefit-item .bi-text p { font-size: 0.9rem; color: var(--gray-500); margin: 0; }
+        .benefit-img { border-radius: 20px; overflow: hidden; box-shadow: var(--shadow-lg); aspect-ratio: 4/3; }
+        .benefit-img img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* GALLERY STRIP */
+        .gallery-strip { padding: 80px 0; background: var(--gray-100); }
+        .gallery-strip .section-header { text-align: center; margin-bottom: 48px; }
+        .gallery-strip .section-header .section-desc { max-width: 600px; margin: 0 auto; color: var(--gray-500); }
+        .gallery-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+        .gallery-item { border-radius: 16px; overflow: hidden; aspect-ratio: 1; position: relative; cursor: pointer; }
+        .gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: var(--transition); }
+        .gallery-item:hover img { transform: scale(1.08); }
+        .gallery-item .g-overlay {
+            position: absolute; inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 50%);
+            opacity: 0; transition: var(--transition); display: flex; align-items: flex-end; padding: 20px;
+            color: #fff; font-weight: 600; font-size: 0.95rem;
+        }
+        .gallery-item:hover .g-overlay { opacity: 1; }
+
+        /* CTA */
+        .cta-section {
+            padding: 80px 0;
+            background: linear-gradient(135deg, var(--blue) 0%, #2563eb 100%);
+            text-align: center; color: #fff;
+        }
+        .cta-section h2 { font-size: clamp(1.8rem, 3vw, 2.5rem); font-weight: 800; margin-bottom: 16px; }
+        .cta-section p { color: rgba(255,255,255,0.8); margin-bottom: 32px; font-size: 1.1rem; max-width: 500px; margin-left: auto; margin-right: auto; margin-bottom: 32px; }
+        .btn-white { background: #fff; color: var(--blue); font-weight: 700; }
+        .btn-white:hover { background: var(--orange); color: #fff; transform: translateY(-2px); }
+
+        /* FOOTER */
+        .footer { background: var(--gray-900); color: #fff; padding: 64px 0 0; }
+        .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; padding-bottom: 48px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .footer-brand p { color: var(--gray-500); margin: 16px 0 24px; line-height: 1.7; font-size: 0.95rem; }
+        .social-icons { display: flex; gap: 12px; }
+        .social-icons a { width: 40px; height: 40px; border-radius: 10px; background: rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center; transition: var(--transition); color: var(--gray-500); }
+        .social-icons a:hover { background: var(--orange); color: #fff; transform: translateY(-2px); }
+        .footer h4 { font-size: 1rem; font-weight: 700; margin-bottom: 20px; }
+        .footer-links li { margin-bottom: 12px; }
+        .footer-links a { color: var(--gray-500); font-size: 0.95rem; transition: var(--transition); }
+        .footer-links a:hover { color: var(--orange); padding-left: 4px; }
+        .footer-bottom { padding: 24px 0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+        .footer-bottom p { color: var(--gray-500); font-size: 0.9rem; }
+        .footer-bottom-links { display: flex; gap: 24px; }
+        .footer-bottom-links a { color: var(--gray-500); font-size: 0.9rem; transition: var(--transition); }
+        .footer-bottom-links a:hover { color: var(--orange); }
+
+        .reveal { opacity: 0; transform: translateY(30px); transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+        .reveal-delay-1 { transition-delay: 0.15s; }
+        .reveal-delay-2 { transition-delay: 0.3s; }
+
+        @media (max-width: 1024px) {
+            .mv-grid, .benefit-content.active { grid-template-columns: 1fr; }
+            .improve-grid { grid-template-columns: repeat(2, 1fr); }
+            .gallery-row { grid-template-columns: repeat(2, 1fr); }
+            .footer-grid { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .hamburger { display: flex; }
+            .improve-grid { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; }
+            .mv-cards { grid-template-columns: 1fr; }
+            .gallery-row { grid-template-columns: 1fr 1fr; }
+            .footer-grid { grid-template-columns: 1fr; text-align: center; }
+            .social-icons { justify-content: center; }
+            .footer-bottom { justify-content: center; text-align: center; }
+        }
+        @media (max-width: 480px) {
+            .gallery-row { grid-template-columns: 1fr; }
+            .benefit-tabs { flex-direction: column; align-items: center; }
+        }
+    </style>
+</head>
+<body>
+    <!-- NAV -->
+    <nav class="nav" id="navbar">
+        <div class="container nav-inner">
+            <a href="index.html" class="logo">
+                <svg viewBox="0 0 36 36" fill="none"><rect width="36" height="36" rx="8" fill="#1a56db"/><path d="M6 22H30V26C30 27.1 29.1 28 28 28H8C6.9 28 6 27.1 6 26Z" fill="#f27b20"/><rect x="6" y="12" width="24" height="10" rx="2" fill="white"/><circle cx="12" cy="28" r="3" fill="#333" stroke="white" stroke-width="1.5"/><circle cx="24" cy="28" r="3" fill="#333" stroke="white" stroke-width="1.5"/></svg>
+                Trotro<span>Go</span>
+            </a>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="about.html" class="active">About</a>
+                <a href="contact.html">Contact</a>
+                <a href="login.html" class="btn-login">Login</a>
+                <a href="register.html" class="btn-register">Register</a>
+            </div>
+            <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+        </div>
+        <div class="mobile-menu" id="mobileMenu">
+            <a href="index.html">Home</a><a href="about.html">About</a><a href="contact.html">Contact</a>
+            <div class="mobile-auth">
+                <a href="login.html" class="btn-login">Login</a>
+                <a href="register.html" class="btn-register">Register</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- PAGE HERO -->
+    <section class="page-hero">
+        <div class="container">
+            <div class="breadcrumb"><a href="index.html">Home</a><span class="sep">/</span><span>About</span></div>
+            <h1>About <span class="highlight">Smart-Trotro</span></h1>
+            <p>We're building the future of urban mobility in Ghana — one trotro at a time. Smarter, safer, and more transparent public transport for everyone.</p>
+        </div>
+    </section>
+
+    <!-- MISSION & VISION -->
+    <section class="mission-vision">
+        <div class="container mv-grid">
+            <div class="mv-img reveal">
+                <img src="https://images.unsplash.com/photo-1494515843206-f3117d3f51b7?w=600&h=450&fit=crop" alt="Urban transport">
+                <div class="overlay"></div>
+            </div>
+            <div class="mv-content reveal reveal-delay-1">
+                <div class="section-label">Our Story</div>
+                <h2 class="section-title">From Chaos to Clarity</h2>
+                <p>Smart-Trotro was born out of a simple frustration — the unpredictability of Ghana's trotro system. Millions of Ghanaians rely on trotros daily, yet there's no way to know when one will arrive, what the fare should be, or how to send a parcel reliably.</p>
+                <p>We set out to change that. By combining GPS tracking, mobile money integration, and a network of verified drivers, we're creating a platform that brings transparency, convenience, and trust to the trotro experience.</p>
+                <div class="mv-cards">
+                    <div class="mv-card">
+                        <div class="icon blue">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                        </div>
+                        <h4>Our Mission</h4>
+                        <p>To digitize and modernize Ghana's trotro transport for safer, smarter, and fairer urban mobility.</p>
+                    </div>
+                    <div class="mv-card">
+                        <div class="icon orange">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </div>
+                        <h4>Our Vision</h4>
+                        <p>A connected West Africa where public transport is efficient, inclusive, and technology-powered.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- HOW WE IMPROVE TROTRO -->
+    <section class="improvements">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-label">Our Impact</div>
+                <h2 class="section-title">How We're Improving Trotro Transport</h2>
+                <p class="section-desc">We tackle the biggest pain points in the trotro system with technology-driven solutions.</p>
+            </div>
+            <div class="improve-grid">
+                <div class="improve-card reveal">
+                    <div class="ic-icon blue">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    </div>
+                    <h3>Reduced Wait Times</h3>
+                    <p>Real-time tracking lets passengers know exactly when the next trotro arrives — no more waiting for hours at the station.</p>
+                </div>
+                <div class="improve-card reveal reveal-delay-1">
+                    <div class="ic-icon orange">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                    </div>
+                    <h3>Fair & Transparent Pricing</h3>
+                    <p>Digital fare calculation eliminates overcharging. Passengers and drivers agree on a fair price before the trip starts.</p>
+                </div>
+                <div class="improve-card reveal reveal-delay-2">
+                    <div class="ic-icon green">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                    </div>
+                    <h3>Enhanced Safety</h3>
+                    <p>GPS tracking, driver verification, and trip sharing features give passengers peace of mind on every journey.</p>
+                </div>
+                <div class="improve-card reveal">
+                    <div class="ic-icon blue">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="7" cy="18" r="2"/><circle cx="20" cy="18" r="2"/></svg>
+                    </div>
+                    <h3>Logistics Integration</h3>
+                    <p>Trotros become parcel carriers along their routes, creating a new income stream for drivers and affordable delivery for senders.</p>
+                </div>
+                <div class="improve-card reveal reveal-delay-1">
+                    <div class="ic-icon orange">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    </div>
+                    <h3>Driver Empowerment</h3>
+                    <p>Earnings dashboards, trip analytics, and financial tools help drivers manage and grow their income effectively.</p>
+                </div>
+                <div class="improve-card reveal reveal-delay-2">
+                    <div class="ic-icon green">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                    </div>
+                    <h3>Route Optimization</h3>
+                    <p>Data-driven route planning reduces congestion, lowers fuel costs, and minimizes the environmental impact of trotro transport.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- BENEFITS -->
+    <section class="benefits">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-label">Benefits</div>
+                <h2 class="section-title">Benefits for Everyone</h2>
+                <p class="section-desc">Smart-Trotro creates value for every stakeholder in the transport ecosystem.</p>
+            </div>
+            <div class="benefit-tabs">
+                <button class="benefit-tab active" data-tab="passengers">For Passengers</button>
+                <button class="benefit-tab" data-tab="drivers">For Drivers</button>
+                <button class="benefit-tab" data-tab="senders">For Parcel Senders</button>
+            </div>
+            <div class="benefit-content active" id="tab-passengers">
+                <div class="benefit-text">
+                    <h3>Ride Smarter, Arrive Faster</h3>
+                    <p>No more guessing when the next trotro arrives. With Smart-Trotro, passengers enjoy a modern, hassle-free commute.</p>
+                    <div class="benefit-list">
+                        <div class="benefit-item">
+                            <div class="bi-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+                            <div class="bi-text"><h4>Real-time arrival estimates</h4><p>Know exactly when your trotro reaches your stop.</p></div>
+                        </div>
+                        <div class="benefit-item">
+                            <div class="bi-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+                            <div class="bi-text"><h4>Cashless mobile money payments</h4><p>Pay with MTN MoMo, Vodafone Cash, or AirtelTigo Money.</p></div>
+                        </div>
+                        <div class="benefit-item">
+                            <div class="bi-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+                            <div class="bi-text"><h4>Trip safety features</h4><p>Share your live trip with family and friends for peace of mind.</p></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="benefit-img">
+                    <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=500&h=375&fit=crop" alt="Passengers">
+                </div>
+            </div>
+            <div class="benefit-content" id="tab-drivers">
+                <div class="benefit-text">
+                    <h3>Earn More, Manage Better</h3>
+                    <p>Smart-Trotro gives drivers the tools to maximize their earnings and manage their business professionally.</p>
+                    <div class="benefit-list">
+                        <div class="benefit-item">
+                            <div class="bi-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+                            <div class="bi-text"><h4>Earnings dashboard & analytics</h4><p>Track daily, weekly, and monthly income with clear reports.</p></div>
+                        </div>
+                        <div class="benefit-item">
+                            <div class="bi-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+                            <div class="bi-text"><h4>Additional income from parcel delivery</h4><p>Earn extra by carrying parcels along your existing routes.</p></div>
+                        </div>
+                        <div class="benefit-item">
+                            <div class="bi-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+                            <div class="bi-text"><h4>Instant mobile money payouts</h4><p>Get paid directly to your mobile money wallet — fast and secure.</p></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="benefit-img">
+                    <img src="https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=500&h=375&fit=crop" alt="Drivers">
+                </div>
+            </div>
+            <div class="benefit-content" id="tab-senders">
+                <div class="benefit-text">
+                    <h3>Send Parcels the Smart Way</h3>
+                    <p>Leverage Ghana's extensive trotro network for affordable, fast parcel delivery across cities.</p>
+                    <div class="benefit-list">
+                        <div class="benefit-item">
+                            <div class="bi-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+                            <div class="bi-text"><h4>Affordable delivery rates</h4><p>Prices up to 70% cheaper than traditional courier services.</p></div>
+                        </div>
+                        <div class="benefit-item">
+                            <div class="bi-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+                            <div class="bi-text"><h4>Real-time parcel tracking</h4><p>Track your package from pickup to delivery on a live map.</p></div>
+                        </div>
+                        <div class="benefit-item">
+                            <div class="bi-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+                            <div class="bi-text"><h4>Proof of delivery</h4><p>Get confirmation with photo proof when your parcel arrives safely.</p></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="benefit-img">
+                    <img src="https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?w=500&h=375&fit=crop" alt="Parcel delivery">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- GALLERY -->
+    <section class="gallery-strip">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-label">Gallery</div>
+                <h2 class="section-title">Life on the Road</h2>
+                <p class="section-desc">Snapshots of Ghana's vibrant trotro network and the communities we serve.</p>
+            </div>
+            <div class="gallery-row">
+                <div class="gallery-item reveal">
+                    <img src="https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=400&h=400&fit=crop" alt="City transport">
+                    <div class="g-overlay">Urban Routes</div>
+                </div>
+                <div class="gallery-item reveal reveal-delay-1">
+                    <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&h=400&fit=crop" alt="Mobile payments">
+                    <div class="g-overlay">Mobile Payments</div>
+                </div>
+                <div class="gallery-item reveal reveal-delay-1">
+                    <img src="https://images.unsplash.com/photo-1570125909232-eb263c188f7e?w=400&h=400&fit=crop" alt="Public transport">
+                    <div class="g-overlay">Trotro Network</div>
+                </div>
+                <div class="gallery-item reveal reveal-delay-2">
+                    <img src="https://images.unsplash.com/photo-1519003722824-194d4455a60c?w=400&h=400&fit=crop" alt="Community">
+                    <div class="g-overlay">Community Impact</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-section">
+        <div class="container">
+            <h2>Ready to Transform Your Commute?</h2>
+            <p>Join thousands of Ghanaians already using Smart-Trotro for smarter, safer, and more affordable transport.</p>
+            <a href="register.html" class="btn btn-white">Get Started Free
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="index.html" class="logo">
+                        <svg viewBox="0 0 36 36" fill="none" style="width:32px;height:32px"><rect width="36" height="36" rx="8" fill="#1a56db"/><path d="M6 22H30V26C30 27.1 29.1 28 28 28H8C6.9 28 6 27.1 6 26Z" fill="#f27b20"/><rect x="6" y="12" width="24" height="10" rx="2" fill="white"/><circle cx="12" cy="28" r="3" fill="#333" stroke="white" stroke-width="1.5"/><circle cx="24" cy="28" r="3" fill="#333" stroke="white" stroke-width="1.5"/></svg>
+                        Trotro<span>Go</span>
+                    </a>
+                    <p>Digitizing Ghana's trotro transport system with smart technology, mobile payments, and real-time tracking.</p>
+                    <div class="social-icons">
+                        <a href="#"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+                        <a href="#"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg></a>
+                        <a href="#"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg></a>
+                    </div>
+                </div>
+                <div><h4>Quick Links</h4><ul class="footer-links"><li><a href="index.html">Home</a></li><li><a href="about.html">About Us</a></li><li><a href="contact.html">Contact</a></li><li><a href="login.html">Login</a></li><li><a href="register.html">Register</a></li></ul></div>
+                <div><h4>Services</h4><ul class="footer-links"><li><a href="#">Trotro Tracking</a></li><li><a href="#">Mobile Payments</a></li><li><a href="#">Parcel Delivery</a></li><li><a href="#">Driver Dashboard</a></li></ul></div>
+                <div><h4>Contact</h4><ul class="footer-links"><li><a href="mailto:hello@Smart-Trotro.com">ayisiemmanuel151@gmail.com</a></li><li><a href="tel:+233301234567">+233 25 687 9089</a></li><li><a href="#">Accra, Ghana</a></li></ul></div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Smart-Trotro. All rights reserved.</p>
+                <div class="footer-bottom-links"><a href="#">Privacy Policy</a><a href="#">Terms & Conditions</a></div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Nav scroll
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => navbar.classList.toggle('scrolled', window.scrollY > 20));
+
+        // Hamburger
+        const hamburger = document.getElementById('hamburger');
+        const mobileMenu = document.getElementById('mobileMenu');
+        hamburger.addEventListener('click', () => { hamburger.classList.toggle('active'); mobileMenu.classList.toggle('active'); });
+        document.querySelectorAll('.mobile-menu a').forEach(l => l.addEventListener('click', () => { hamburger.classList.remove('active'); mobileMenu.classList.remove('active'); }));
+
+        // Tabs
+        document.querySelectorAll('.benefit-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.benefit-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.benefit-content').forEach(c => c.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+            });
+        });
+
+        // Reveal
+        const revealElements = document.querySelectorAll('.reveal');
+        const revealOnScroll = () => { revealElements.forEach(el => { if (el.getBoundingClientRect().top < window.innerHeight - 80) el.classList.add('active'); }); };
+        window.addEventListener('scroll', revealOnScroll);
+        window.addEventListener('load', revealOnScroll);
+    </script>
+</body>
+</html>

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login — Smart Trotro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="/js/login.js" type="module"></script>
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --blue: #1a56db; --blue-dark: #1340a8; --blue-light: #e8effc;
+            --orange: #f27b20; --orange-dark: #d96a10; --orange-light: #fff3e8;
+            --dark: #111827; --gray-900: #1f2937; --gray-700: #374151;
+            --gray-500: #6b7280; --gray-300: #d1d5db; --gray-100: #f3f4f6;
+            --white: #ffffff; --red: #ef4444; --green: #10b981;
+            --shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 25px -3px rgba(0,0,0,0.12);
+            --shadow-xl: 0 20px 40px -5px rgba(0,0,0,0.15);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Inter', system-ui, sans-serif; color: var(--dark); line-height: 1.6; background: var(--gray-100); min-height: 100vh; }
+        a { text-decoration: none; color: inherit; }
+
+        .auth-layout { display: grid; grid-template-columns: 1fr 1fr; min-height: 100vh; }
+
+        /* LEFT PANEL */
+        .auth-visual {
+            background: linear-gradient(135deg, var(--blue) 0%, #2563eb 40%, var(--blue-dark) 100%);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            padding: 60px; position: relative; overflow: hidden; color: #fff;
+        }
+        .auth-visual::before {
+            content: ''; position: absolute; top: -200px; right: -200px;
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(242,123,32,0.2) 0%, transparent 60%);
+            border-radius: 50%;
+        }
+        .auth-visual::after {
+            content: ''; position: absolute; bottom: -100px; left: -100px;
+            width: 300px; height: 300px;
+            background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 60%);
+            border-radius: 50%;
+        }
+        .auth-visual-content { position: relative; z-index: 1; max-width: 480px; text-align: center; }
+        .auth-visual .logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.8rem; color: #fff; justify-content: center; margin-bottom: 48px; }
+        .auth-visual .logo span { color: var(--orange); }
+        .auth-visual .logo svg { width: 40px; height: 40px; }
+        .auth-visual h2 { font-size: 2rem; font-weight: 800; margin-bottom: 16px; line-height: 1.2; }
+        .auth-visual p { color: rgba(255,255,255,0.75); font-size: 1.05rem; line-height: 1.7; margin-bottom: 40px; }
+        .visual-features { display: flex; flex-direction: column; gap: 20px; text-align: left; }
+        .visual-feature { display: flex; gap: 14px; align-items: center; }
+        .visual-feature .vf-icon {
+            width: 44px; height: 44px; border-radius: 12px; background: rgba(255,255,255,0.1);
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        }
+        .visual-feature .vf-text { font-weight: 500; font-size: 0.95rem; }
+        .visual-feature .vf-sub { font-size: 0.82rem; color: rgba(255,255,255,0.6); }
+
+        /* RIGHT PANEL */
+        .auth-form-panel {
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            padding: 48px; background: var(--white);
+        }
+        .auth-form-wrapper { width: 100%; max-width: 440px; }
+        .auth-form-wrapper .back-home {
+            display: inline-flex; align-items: center; gap: 6px;
+            font-size: 0.9rem; color: var(--gray-500); font-weight: 500;
+            margin-bottom: 32px; transition: var(--transition);
+        }
+        .auth-form-wrapper .back-home:hover { color: var(--blue); }
+        .auth-form-wrapper h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 8px; }
+        .auth-form-wrapper .subtitle { color: var(--gray-500); margin-bottom: 36px; font-size: 1rem; }
+        .auth-form-wrapper .subtitle a { color: var(--orange); font-weight: 600; }
+        .auth-form-wrapper .subtitle a:hover { text-decoration: underline; }
+
+        .form-group { margin-bottom: 24px; position: relative; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.9rem; color: var(--gray-700); }
+        .form-group .required { color: var(--red); }
+        .input-wrapper { position: relative; }
+        .input-wrapper svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 20px; height: 20px; color: var(--gray-500); pointer-events: none; }
+        .form-group input {
+            width: 100%; padding: 14px 16px 14px 44px; border: 2px solid var(--gray-300);
+            border-radius: 12px; font-family: inherit; font-size: 1rem;
+            transition: var(--transition); background: var(--white); color: var(--dark); outline: none;
+        }
+        .form-group input:focus { border-color: var(--blue); box-shadow: 0 0 0 4px rgba(26,86,219,0.1); }
+        .form-group input.error { border-color: var(--red); }
+        .form-group input.error:focus { box-shadow: 0 0 0 4px rgba(239,68,68,0.1); }
+        .form-group .error-msg { color: var(--red); font-size: 0.82rem; margin-top: 6px; font-weight: 500; display: none; }
+        .form-group .error-msg.show { display: block; }
+        .password-toggle {
+            position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+            background: none; border: none; cursor: pointer; color: var(--gray-500);
+            transition: var(--transition); padding: 4px;
+        }
+        .password-toggle:hover { color: var(--blue); }
+        .form-options { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
+        .checkbox-group { display: flex; align-items: center; gap: 8px; }
+        .checkbox-group input[type="checkbox"] {
+            width: 18px; height: 18px; accent-color: var(--blue); cursor: pointer;
+        }
+        .checkbox-group label { font-size: 0.9rem; color: var(--gray-700); cursor: pointer; font-weight: 500; }
+        .forgot-link { font-size: 0.9rem; color: var(--orange); font-weight: 600; transition: var(--transition); }
+        .forgot-link:hover { text-decoration: underline; }
+
+        .btn-submit {
+            width: 100%; padding: 16px; background: var(--blue); color: #fff;
+            border: none; border-radius: 12px; font-size: 1.05rem; font-weight: 700;
+            cursor: pointer; transition: var(--transition); font-family: inherit;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn-submit:hover { background: var(--blue-dark); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(26,86,219,0.3); }
+        .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .btn-submit .spinner { display: none; width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.6s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .divider { display: flex; align-items: center; gap: 16px; margin: 28px 0; }
+        .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--gray-300); }
+        .divider span { font-size: 0.85rem; color: var(--gray-500); font-weight: 500; }
+
+        .social-logins { display: flex; gap: 12px; }
+        .social-btn {
+            flex: 1; padding: 12px; border: 2px solid var(--gray-300); border-radius: 12px;
+            background: var(--white); cursor: pointer; transition: var(--transition);
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            font-family: inherit; font-weight: 600; font-size: 0.9rem; color: var(--gray-700);
+        }
+        .social-btn:hover { border-color: var(--blue-light); background: var(--gray-100); transform: translateY(-1px); }
+        .social-btn svg { width: 20px; height: 20px; }
+
+        @media (max-width: 1024px) {
+            .auth-layout { grid-template-columns: 1fr; }
+            .auth-visual { display: none; }
+        }
+        @media (max-width: 480px) {
+            .auth-form-panel { padding: 32px 20px; }
+            .form-options { flex-direction: column; align-items: flex-start; gap: 12px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-layout">
+        <!-- LEFT VISUAL -->
+        <div class="auth-visual">
+            <div class="auth-visual-content">
+                <a href="index.html" class="logo">
+                    <svg viewBox="0 0 36 36" fill="none"><rect width="36" height="36" rx="8" fill="rgba(255,255,255,0.15)"/><path d="M6 22H30V26C30 27.1 29.1 28 28 28H8C6.9 28 6 27.1 6 26Z" fill="#f27b20"/><rect x="6" y="12" width="24" height="10" rx="2" fill="white"/><circle cx="12" cy="28" r="3" fill="rgba(255,255,255,0.3)" stroke="white" stroke-width="1.5"/><circle cx="24" cy="28" r="3" fill="rgba(255,255,255,0.3)" stroke="white" stroke-width="1.5"/></svg>
+                    Trotro<span>Go</span>
+                </a>
+                <h2>Welcome Back to Smarter Transport</h2>
+                <p>Access your dashboard, track your rides, manage payments, and stay connected with Ghana's evolving trotro network.</p>
+                <div class="visual-features">
+                    <div class="visual-feature">
+                        <div class="vf-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg></div>
+                        <div><div class="vf-text">Live Route Tracking</div><div class="vf-sub">See trotros move in real time</div></div>
+                    </div>
+                    <div class="visual-feature">
+                        <div class="vf-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div>
+                        <div><div class="vf-text">Mobile Money Integration</div><div class="vf-sub">Pay seamlessly with MoMo</div></div>
+                    </div>
+                    <div class="visual-feature">
+                        <div class="vf-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></div>
+                        <div><div class="vf-text">Earnings Dashboard</div><div class="vf-sub">Track income and performance</div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT FORM -->
+        <div class="auth-form-panel">
+            <div class="auth-form-wrapper">
+                <a href="index.html" class="back-home">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                    Back to Home
+                </a>
+                <h1>Sign In</h1>
+                <p class="subtitle">Don't have an account? <a href="register.html">Create one free</a></p>
+
+                <form id="loginForm" novalidate>
+                    <div class="form-group">
+                        <label>Email Address <span class="required">*</span></label>
+                        <div class="input-wrapper">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                            <input type="email" id="email" placeholder="you@example.com" autocomplete="email">
+                        </div>
+                        <div class="error-msg" id="emailError">Please enter a valid email address</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Password <span class="required">*</span></label>
+                        <div class="input-wrapper">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                            <input type="password" id="password" placeholder="Enter your password" autocomplete="current-password">
+                            <button type="button" class="password-toggle" id="togglePassword">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                            </button>
+                        </div>
+                        <div class="error-msg" id="passwordError">Password must be at least 6 characters</div>
+                    </div>
+                    <div class="form-options">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="remember">
+                            <label for="remember">Remember me</label>
+                        </div>
+                        <a href="#" class="forgot-link">Forgot password?</a>
+                    </div>
+                    <button type="submit" class="btn-submit" id="submitBtn">
+                        <span class="btn-text">Sign In</span>
+                        <span class="spinner"></span>
+                    </button>
+                </form>
+
+                <div class="divider"><span>or continue with</span></div>
+                <div class="social-logins">
+                    <button class="social-btn">
+                        <svg viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+                        Google
+                    </button>
+                    <button class="social-btn">
+                        <svg viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                        Facebook
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+</html>

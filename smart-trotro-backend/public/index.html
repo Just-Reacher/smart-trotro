@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart-Trotro — Smart Trotro Transport & Parcel Delivery</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --blue: #1a56db;
+            --blue-dark: #1340a8;
+            --blue-light: #e8effc;
+            --orange: #f27b20;
+            --orange-dark: #d96a10;
+            --orange-light: #fff3e8;
+            --dark: #111827;
+            --gray-900: #1f2937;
+            --gray-700: #374151;
+            --gray-500: #6b7280;
+            --gray-300: #d1d5db;
+            --gray-100: #f3f4f6;
+            --white: #ffffff;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 25px -3px rgba(0,0,0,0.12), 0 4px 6px -4px rgba(0,0,0,0.07);
+            --shadow-xl: 0 20px 40px -5px rgba(0,0,0,0.15);
+            --radius: 12px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Inter', system-ui, sans-serif; color: var(--dark); line-height: 1.6; overflow-x: hidden; background: var(--white); }
+        a { text-decoration: none; color: inherit; }
+        img { max-width: 100%; display: block; }
+        ul { list-style: none; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+        /* ── NAV ── */
+        .nav {
+            position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
+            background: rgba(255,255,255,0.92); backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+            transition: var(--transition);
+        }
+        .nav.scrolled { box-shadow: var(--shadow); }
+        .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 72px; }
+        .logo { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 1.5rem; color: var(--blue); }
+        .logo span { color: var(--orange); }
+        .logo svg { width: 36px; height: 36px; }
+        .nav-links { display: flex; align-items: center; gap: 8px; }
+        .nav-links a {
+            padding: 8px 16px; border-radius: 8px; font-weight: 500; font-size: 0.95rem;
+            color: var(--gray-700); transition: var(--transition);
+        }
+        .nav-links a:hover { color: var(--blue); background: var(--blue-light); }
+        .nav-links a.active { color: var(--blue); background: var(--blue-light); }
+        .nav-links .btn-login {
+            color: var(--blue); border: 2px solid var(--blue); border-radius: 8px;
+            padding: 8px 20px; font-weight: 600; margin-left: 8px;
+        }
+        .nav-links .btn-login:hover { background: var(--blue); color: #fff; }
+        .nav-links .btn-register {
+            background: var(--orange); color: #fff; border-radius: 8px;
+            padding: 10px 22px; font-weight: 600; border: none;
+        }
+        .nav-links .btn-register:hover { background: var(--orange-dark); transform: translateY(-1px); }
+        .hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 4px; z-index: 1001; }
+        .hamburger span { display: block; width: 26px; height: 3px; background: var(--dark); border-radius: 3px; transition: var(--transition); }
+        .hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 6px); }
+        .hamburger.active span:nth-child(2) { opacity: 0; }
+        .hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(5px, -6px); }
+        .mobile-menu {
+            display: none; position: fixed; top: 72px; left: 0; width: 100%; background: var(--white);
+            padding: 24px; border-bottom: 1px solid var(--gray-300);
+            box-shadow: var(--shadow-lg); z-index: 999;
+        }
+        .mobile-menu.active { display: block; animation: slideDown 0.3s ease; }
+        .mobile-menu a {
+            display: block; padding: 14px 16px; font-weight: 500; border-radius: 8px;
+            color: var(--gray-700); transition: var(--transition); font-size: 1.05rem;
+        }
+        .mobile-menu a:hover { background: var(--blue-light); color: var(--blue); }
+        .mobile-menu .mobile-auth { display: flex; gap: 12px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--gray-300); }
+        .mobile-menu .mobile-auth a { flex: 1; text-align: center; }
+        .mobile-menu .mobile-auth .btn-login { border: 2px solid var(--blue); color: var(--blue); }
+        .mobile-menu .mobile-auth .btn-register { background: var(--orange); color: #fff; }
+
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ── HERO ── */
+        .hero {
+            padding-top: 72px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f0f4ff 0%, #fef6ee 50%, #f0f4ff 100%);
+        }
+        .hero::before {
+            content: '';
+            position: absolute; top: -200px; right: -200px;
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(242,123,32,0.08) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        .hero::after {
+            content: '';
+            position: absolute; bottom: -100px; left: -100px;
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(26,86,219,0.06) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        .hero-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; position: relative; z-index: 1; }
+        .hero-badge {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: var(--orange-light); color: var(--orange-dark); font-weight: 600;
+            padding: 8px 18px; border-radius: 50px; font-size: 0.85rem; margin-bottom: 20px;
+            border: 1px solid rgba(242,123,32,0.2);
+        }
+        .hero-badge svg { width: 16px; height: 16px; }
+        .hero h1 {
+            font-size: clamp(2.2rem, 5vw, 3.5rem); font-weight: 900; line-height: 1.1;
+            color: var(--dark); margin-bottom: 20px;
+        }
+        .hero h1 .highlight { color: var(--orange); position: relative; }
+        .hero h1 .blue { color: var(--blue); }
+        .hero-desc { font-size: 1.15rem; color: var(--gray-500); margin-bottom: 36px; max-width: 520px; line-height: 1.7; }
+        .hero-btns { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 48px; }
+        .btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 14px 32px; border-radius: 10px; font-weight: 600;
+            font-size: 1rem; cursor: pointer; transition: var(--transition);
+            border: none; font-family: inherit;
+        }
+        .btn-primary { background: var(--orange); color: #fff; box-shadow: 0 4px 14px rgba(242,123,32,0.35); }
+        .btn-primary:hover { background: var(--orange-dark); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(242,123,32,0.4); }
+        .btn-secondary { background: var(--white); color: var(--blue); border: 2px solid var(--blue); }
+        .btn-secondary:hover { background: var(--blue); color: #fff; transform: translateY(-2px); }
+        .hero-stats { display: flex; gap: 40px; }
+        .hero-stat { text-align: left; }
+        .hero-stat .num { font-size: 1.8rem; font-weight: 800; color: var(--blue); }
+        .hero-stat .num span { color: var(--orange); }
+        .hero-stat .label { font-size: 0.85rem; color: var(--gray-500); font-weight: 500; }
+        .hero-visual { position: relative; }
+        .hero-img-wrapper {
+            position: relative; border-radius: 24px; overflow: hidden;
+            box-shadow: var(--shadow-xl);
+            aspect-ratio: 4/3;
+            background: linear-gradient(135deg, var(--blue) 0%, #2563eb 100%);
+        }
+        .hero-img-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+        .hero-img-wrapper .overlay {
+            position: absolute; inset: 0;
+            background: linear-gradient(135deg, rgba(26,86,219,0.15) 0%, rgba(242,123,32,0.1) 100%);
+        }
+
+        /* ── FEATURES ── */
+        .features { padding: 100px 0; background: var(--white); }
+        .section-label {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: var(--blue-light); color: var(--blue); font-weight: 600;
+            padding: 6px 16px; border-radius: 50px; font-size: 0.82rem;
+            text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 16px;
+        }
+        .section-title { font-size: clamp(1.8rem, 3.5vw, 2.5rem); font-weight: 800; margin-bottom: 16px; color: var(--dark); }
+        .section-desc { font-size: 1.05rem; color: var(--gray-500); max-width: 600px; line-height: 1.7; }
+        .section-header { text-align: center; margin-bottom: 64px; display: flex; flex-direction: column; align-items: center; }
+        .features-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; }
+        .feature-card {
+            background: var(--white); border: 1px solid var(--gray-100);
+            border-radius: 20px; padding: 36px 28px; transition: var(--transition);
+            position: relative; overflow: hidden;
+        }
+        .feature-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+            background: linear-gradient(90deg, var(--blue), var(--orange));
+            opacity: 0; transition: var(--transition);
+        }
+        .feature-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-xl); border-color: transparent; }
+        .feature-card:hover::before { opacity: 1; }
+        .feature-icon {
+            width: 64px; height: 64px; border-radius: 16px;
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 24px; font-size: 28px;
+        }
+        .feature-icon.blue { background: var(--blue-light); color: var(--blue); }
+        .feature-icon.orange { background: var(--orange-light); color: var(--orange); }
+        .feature-icon.green { background: #ecfdf5; color: #059669; }
+        .feature-icon.purple { background: #f3e8ff; color: #7c3aed; }
+        .feature-card h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: 12px; color: var(--dark); }
+        .feature-card p { font-size: 0.95rem; color: var(--gray-500); line-height: 1.6; }
+
+        /* ── HOW IT WORKS ── */
+        .how-it-works { padding: 100px 0; background: var(--gray-100); }
+        .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; position: relative; }
+        .step {
+            text-align: center; padding: 40px 32px;
+            background: var(--white); border-radius: 20px;
+            position: relative; transition: var(--transition);
+        }
+        .step:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+        .step-num {
+            width: 56px; height: 56px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--blue), var(--orange));
+            color: #fff; font-weight: 800; font-size: 1.3rem;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 24px;
+        }
+        .step h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: 12px; }
+        .step p { color: var(--gray-500); font-size: 0.95rem; line-height: 1.6; }
+
+        /* ── ABOUT PREVIEW ── */
+        .about-preview { padding: 100px 0; background: var(--white); }
+        .about-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+        .about-images { position: relative; }
+        .about-img-main {
+            border-radius: 20px; overflow: hidden; box-shadow: var(--shadow-lg);
+            aspect-ratio: 4/3;
+            background: linear-gradient(135deg, #f97316 0%, #f59e0b 100%);
+        }
+        .about-img-main img { width: 100%; height: 100%; object-fit: cover; }
+        .about-img-secondary {
+            position: absolute; bottom: -30px; right: -30px;
+            width: 200px; border-radius: 16px; overflow: hidden;
+            box-shadow: var(--shadow-xl); border: 4px solid var(--white);
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, var(--blue), #60a5fa);
+        }
+        .about-img-secondary img { width: 100%; height: 100%; object-fit: cover; }
+        .about-content .section-label { margin-bottom: 16px; }
+        .about-content .section-title { text-align: left; margin-bottom: 20px; }
+        .about-content p { color: var(--gray-500); margin-bottom: 16px; line-height: 1.7; font-size: 1.05rem; }
+        .about-list { margin: 24px 0 32px; }
+        .about-list li {
+            display: flex; align-items: center; gap: 12px;
+            padding: 10px 0; font-weight: 500; color: var(--gray-700);
+        }
+        .about-list li svg { width: 24px; height: 24px; color: var(--orange); flex-shrink: 0; }
+
+        /* ── CONTACT PREVIEW ── */
+        .contact-preview {
+            padding: 80px 0;
+            background: linear-gradient(135deg, var(--blue) 0%, #2563eb 50%, var(--blue-dark) 100%);
+            color: #fff; text-align: center; position: relative; overflow: hidden;
+        }
+        .contact-preview::before {
+            content: ''; position: absolute; top: -50%; right: -20%;
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(242,123,32,0.15) 0%, transparent 60%);
+            border-radius: 50%;
+        }
+        .contact-preview .section-label { background: rgba(255,255,255,0.15); color: #fff; }
+        .contact-preview .section-title { color: #fff; }
+        .contact-preview .section-desc { color: rgba(255,255,255,0.8); margin: 0 auto 40px; }
+        .contact-info-row { display: flex; justify-content: center; gap: 48px; margin-bottom: 40px; flex-wrap: wrap; position: relative; z-index: 1; }
+        .contact-item { display: flex; align-items: center; gap: 12px; }
+        .contact-item .ci-icon {
+            width: 48px; height: 48px; background: rgba(255,255,255,0.15);
+            border-radius: 12px; display: flex; align-items: center; justify-content: center;
+        }
+        .contact-item .ci-text { text-align: left; }
+        .contact-item .ci-label { font-size: 0.8rem; opacity: 0.7; font-weight: 500; }
+        .contact-item .ci-value { font-weight: 600; font-size: 1rem; }
+        .btn-white { background: #fff; color: var(--blue); font-weight: 700; }
+        .btn-white:hover { background: var(--orange); color: #fff; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
+
+        /* ── FOOTER ── */
+        .footer { background: var(--gray-900); color: #fff; padding: 64px 0 0; }
+        .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; padding-bottom: 48px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .footer-brand p { color: var(--gray-500); margin: 16px 0 24px; line-height: 1.7; font-size: 0.95rem; }
+        .social-icons { display: flex; gap: 12px; }
+        .social-icons a {
+            width: 40px; height: 40px; border-radius: 10px; background: rgba(255,255,255,0.08);
+            display: flex; align-items: center; justify-content: center;
+            transition: var(--transition); color: var(--gray-500);
+        }
+        .social-icons a:hover { background: var(--orange); color: #fff; transform: translateY(-2px); }
+        .footer h4 { font-size: 1rem; font-weight: 700; margin-bottom: 20px; color: #fff; }
+        .footer-links li { margin-bottom: 12px; }
+        .footer-links a { color: var(--gray-500); font-size: 0.95rem; transition: var(--transition); }
+        .footer-links a:hover { color: var(--orange); padding-left: 4px; }
+        .footer-bottom {
+            padding: 24px 0; display: flex; justify-content: space-between;
+            align-items: center; flex-wrap: wrap; gap: 16px;
+        }
+        .footer-bottom p { color: var(--gray-500); font-size: 0.9rem; }
+        .footer-bottom-links { display: flex; gap: 24px; }
+        .footer-bottom-links a { color: var(--gray-500); font-size: 0.9rem; transition: var(--transition); }
+        .footer-bottom-links a:hover { color: var(--orange); }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 1024px) {
+            .hero-inner { grid-template-columns: 1fr; text-align: center; gap: 40px; }
+            .hero-desc { margin: 0 auto 36px; }
+            .hero-btns { justify-content: center; }
+            .hero-stats { justify-content: center; }
+            .hero-visual { max-width: 500px; margin: 0 auto; }
+            .features-grid { grid-template-columns: repeat(2, 1fr); }
+            .about-inner { grid-template-columns: 1fr; }
+            .about-content .section-title { text-align: center; }
+            .about-content { text-align: center; }
+            .about-list li { justify-content: center; }
+            .about-images { max-width: 500px; margin: 0 auto; }
+            .footer-grid { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .hamburger { display: flex; }
+            .hero { min-height: auto; padding: 120px 0 60px; }
+            .hero-stats { flex-direction: column; gap: 16px; align-items: center; }
+            .features-grid { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; }
+            .steps { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; }
+            .contact-info-row { flex-direction: column; align-items: center; gap: 24px; }
+            .footer-grid { grid-template-columns: 1fr; text-align: center; }
+            .social-icons { justify-content: center; }
+            .footer-bottom { justify-content: center; text-align: center; }
+            .about-img-secondary { bottom: -20px; right: -10px; width: 140px; }
+        }
+        @media (max-width: 480px) {
+            .hero-btns { flex-direction: column; align-items: center; }
+            .btn { width: 100%; justify-content: center; }
+            .container { padding: 0 16px; }
+        }
+
+        /* ── ANIMATIONS ── */
+        .reveal { opacity: 0; transform: translateY(30px); transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+        .reveal-delay-1 { transition-delay: 0.1s; }
+        .reveal-delay-2 { transition-delay: 0.2s; }
+        .reveal-delay-3 { transition-delay: 0.3s; }
+        .reveal-delay-4 { transition-delay: 0.4s; }
+    </style>
+</head>
+<body>
+    <!-- NAVIGATION -->
+    <nav class="nav" id="navbar">
+        <div class="container nav-inner">
+            <a href="index.html" class="logo">
+                <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="36" height="36" rx="8" fill="#1a56db"/>
+                    <path d="M6 22 H30 V26 C30 27.1 29.1 28 28 28 H8 C6.9 28 6 27.1 6 26Z" fill="#f27b20"/>
+                    <rect x="6" y="12" width="24" height="10" rx="2" fill="white"/>
+                    <rect x="8" y="14" width="6" height="6" rx="1" fill="#1a56db" opacity="0.3"/>
+                    <rect x="16" y="14" width="6" height="6" rx="1" fill="#1a56db" opacity="0.3"/>
+                    <rect x="24" y="14" width="4" height="6" rx="1" fill="#1a56db" opacity="0.3"/>
+                    <circle cx="12" cy="28" r="3" fill="#333" stroke="white" stroke-width="1.5"/>
+                    <circle cx="24" cy="28" r="3" fill="#333" stroke="white" stroke-width="1.5"/>
+                    <path d="M6 12 L10 8 H26 L30 12" stroke="#1a56db" stroke-width="0" fill="white" opacity="0.5"/>
+                </svg>
+                Trotro<span>Go</span>
+            </a>
+            <div class="nav-links">
+                <a href="index.html" class="active">Home</a>
+                <a href="about.html">About</a>
+                <a href="contact.html">Contact</a>
+                <a href="login.html" class="btn-login">Login</a>
+                <a href="register.html" class="btn-register">Register</a>
+            </div>
+            <button class="hamburger" id="hamburger" aria-label="Menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+        <div class="mobile-menu" id="mobileMenu">
+            <a href="index.html">Home</a>
+            <a href="about.html">About</a>
+            <a href="contact.html">Contact</a>
+            <div class="mobile-auth">
+                <a href="login.html" class="btn-login">Login</a>
+                <a href="register.html" class="btn-register">Register</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="container hero-inner">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <svg viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="4"/></svg>
+                    Now Live in Accra & Kumasi
+                </div>
+                <h1>
+                    <span class="blue">Smart Trotro</span><br>
+                    Transport &<br>
+                    <span class="highlight">Parcel Delivery</span>
+                </h1>
+                <p class="hero-desc">
+                    Digitizing Ghana's trotro network with real-time tracking, mobile money payments, and parcel delivery along routes. Moving people and packages — the smart way.
+                </p>
+                <div class="hero-btns">
+                    <a href="register.html" class="btn btn-primary">
+                        Get Started Free
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </a>
+                    <a href="login.html" class="btn btn-secondary">Login to Dashboard</a>
+                </div>
+                <div class="hero-stats">
+                    <div class="hero-stat">
+                        <div class="num">15K<span>+</span></div>
+                        <div class="label">Daily Riders</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="num">500<span>+</span></div>
+                        <div class="label">Trotros Onboard</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="num">50<span>+</span></div>
+                        <div class="label">Routes Covered</div>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="hero-img-wrapper">
+                    <img src="images/img1.jpeg" alt="Urban transport in Ghana">
+                    <div class="overlay"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-label">Features</div>
+                <h2 class="section-title">Everything You Need for<br>Smarter Transport</h2>
+                <p class="section-desc">From real-time tracking to cashless payments, Smart-Trotro brings modern technology to Ghana's most-used public transport system.</p>  
+            </div>
+            <div class="features-grid">
+                <div class="feature-card reveal">
+                    <div class="feature-icon blue">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+                    </div>
+                    <h3>Real-Time Trotro Tracking</h3>
+                    <p>Track trotros on your route in real time. Know exactly when the next bus arrives and plan your journey smarter.</p>
+                </div>
+                <div class="feature-card reveal reveal-delay-1">
+                    <div class="feature-icon orange">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                    </div>
+                    <h3>Mobile Money Payments</h3>
+                    <p>Pay fares seamlessly with MTN MoMo, Vodafone Cash, or AirtelTigo Money. No more scrambling for change.</p>
+                </div>
+                <div class="feature-card reveal reveal-delay-2">
+                    <div class="feature-icon green">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="7" cy="18" r="2"/><circle cx="20" cy="18" r="2"/></svg>
+                    </div>
+                    <h3>Parcel Delivery Along Routes</h3>
+                    <p>Send packages along existing trotro routes. Affordable, fast delivery leveraging the transport network already in place.</p>
+                </div>
+                <div class="feature-card reveal reveal-delay-3">
+                    <div class="feature-icon purple">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+                    </div>
+                    <h3>Driver Earnings Dashboard</h3>
+                    <p>Drivers get full visibility into their earnings, trip history, and performance metrics — all in one clean dashboard.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section class="how-it-works">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-label">How It Works</div>
+                <h2 class="section-title">Get Moving in 3 Simple Steps</h2>
+                <p class="section-desc">Whether you're commuting or sending a parcel, Smart-Trotro makes it effortless.</p>
+            </div>
+            <div class="steps">
+                <div class="step reveal">
+                    <div class="step-num">1</div>
+                    <h3>Sign Up & Find Your Route</h3>
+                    <p>Create your free account and search for trotro routes near you. See real-time availability and estimated arrival times.</p>
+                </div>
+                <div class="step reveal reveal-delay-1">
+                    <div class="step-num">2</div>
+                    <h3>Book & Pay with Mobile Money</h3>
+                    <p>Reserve your seat or schedule a parcel pickup. Pay instantly with mobile money — no cash needed.</p>
+                </div>
+                <div class="step reveal reveal-delay-2">
+                    <div class="step-num">3</div>
+                    <h3>Ride or Track Your Parcel</h3>
+                    <p>Board your trotro or track your parcel in real time. Rate your experience and earn loyalty rewards.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ABOUT PREVIEW -->
+    <section class="about-preview">
+        <div class="container about-inner">
+            <div class="about-images reveal">
+                <div class="about-img-main">
+                    <img src="images/img2.jpeg" alt="Public transport">
+                </div>
+                <div class="about-img-secondary">
+                    <img src="images/img3.jpeg" alt="Mobile payment">
+                </div>
+            </div>
+            <div class="about-content reveal reveal-delay-1">
+                <div class="section-label">About Smart-Trotro</div>
+                <h2 class="section-title">Transforming How Ghana Moves</h2>
+                <p>Smart-Trotro is on a mission to digitize and modernize Ghana's trotro transport system; the backbone of urban mobility for millions of Ghanaians.</p>
+                <p>We believe that technology can make public transport safer, more reliable, and more transparent for everyone- passengers, drivers, and businesses alike.</p>
+                <ul class="about-list">
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        Safer, more transparent rides
+                    </li>
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        Fair pricing with no overcharging
+                    </li>
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        Income empowerment for drivers
+                    </li>
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        Eco-friendly route optimization
+                    </li>
+                </ul>
+                <a href="about.html" class="btn btn-primary">Learn More About Us
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- CONTACT PREVIEW -->
+    <section class="contact-preview">
+        <div class="container">
+            <div class="section-label">Get In Touch</div>
+            <h2 class="section-title reveal">Have Questions? We'd Love to Hear From You</h2>
+            <p class="section-desc reveal">Whether you're a passenger, driver, or business personnel, reach out and let's build the future of transport together.</p>
+            <div class="contact-info-row reveal">
+                <div class="contact-item">
+                    <div class="ci-icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                    </div>
+                    <div class="ci-text">
+                        <div class="ci-label">Email Us</div>
+                        <div class="ci-value">ayisiemmanuel151@gmail.com</div>
+                    </div>
+                </div>
+                <div class="contact-item">
+                    <div class="ci-icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    </div>
+                    <div class="ci-text">
+                        <div class="ci-label">Call Us</div>
+                        <div class="ci-value">+233 25 687 9089</div>
+                    </div>
+                </div>
+                <div class="contact-item">
+                    <div class="ci-icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    </div>
+                    <div class="ci-text">
+                        <div class="ci-label">Visit Us</div>
+                        <div class="ci-value">Accra, Ghana</div>
+                    </div>
+                </div>
+            </div>
+            <a href="contact.html" class="btn btn-white">Contact Us
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="index.html" class="logo">
+                        <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:32px;height:32px">
+                            <rect width="36" height="36" rx="8" fill="#1a56db"/>
+                            <path d="M6 22 H30 V26 C30 27.1 29.1 28 28 28 H8 C6.9 28 6 27.1 6 26Z" fill="#f27b20"/>
+                            <rect x="6" y="12" width="24" height="10" rx="2" fill="white"/>
+                            <circle cx="12" cy="28" r="3" fill="#333" stroke="white" stroke-width="1.5"/>
+                            <circle cx="24" cy="28" r="3" fill="#333" stroke="white" stroke-width="1.5"/>
+                        </svg>
+                        Trotro<span>Go</span>
+                    </a>
+                    <p>Digitizing Ghana's trotro transport system with smart technology, mobile payments, and real-time tracking.</p>
+                    <div class="social-icons">
+                        <a href="#" aria-label="Facebook"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+                        <a href="#" aria-label="Twitter"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg></a>
+                        <a href="#" aria-label="Instagram"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg></a>
+                        <a href="#" aria-label="LinkedIn"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+                    </div>
+                </div>
+                <div>
+                    <h4>Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="login.html">Login</a></li>
+                        <li><a href="register.html">Register</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>Services</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">Trotro Tracking</a></li>
+                        <li><a href="#">Mobile Payments</a></li>
+                        <li><a href="#">Parcel Delivery</a></li>
+                        <li><a href="#">Driver Dashboard</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>Contact</h4>
+                    <ul class="footer-links">
+                        <li><a href="mailto:ayisiemmanuel151@gmail.com">ayisiemmanuel151@gmail.com</a></li>
+                        <li><a href="tel:+233256879089">+233 25 687 9089</a></li>
+                        <li><a href="#">Accra, Ghana</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 SmartTrotro. All rights reserved.</p>
+                <div class="footer-bottom-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms & Conditions</a>
+                    <a href="#">Cookie Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Navbar scroll effect
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            navbar.classList.toggle('scrolled', window.scrollY > 20);
+        });
+
+        // Hamburger menu
+        const hamburger = document.getElementById('hamburger');
+        const mobileMenu = document.getElementById('mobileMenu');
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
+        });
+
+        // Close mobile menu on link click
+        document.querySelectorAll('.mobile-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                hamburger.classList.remove('active');
+                mobileMenu.classList.remove('active');
+            });
+        });
+
+        // Scroll reveal
+        const revealElements = document.querySelectorAll('.reveal');
+        const revealOnScroll = () => {
+            revealElements.forEach(el => {
+                const rect = el.getBoundingClientRect();
+                if (rect.top < window.innerHeight - 80) {
+                    el.classList.add('active');
+                }
+            });
+        };
+        window.addEventListener('scroll', revealOnScroll);
+        window.addEventListener('load', revealOnScroll);
+
+        // Counter animation for hero stats
+        function animateCounters() {
+            document.querySelectorAll('.hero-stat .num').forEach(counter => {
+                const text = counter.textContent;
+                const match = text.match(/(\d+)/);
+                if (!match) return;
+                const target = parseInt(match[1]);
+                const suffix = text.replace(match[1], '');
+                let current = 0;
+                const step = Math.ceil(target / 60);
+                const timer = setInterval(() => {
+                    current += step;
+                    if (current >= target) {
+                        current = target;
+                        clearInterval(timer);
+                    }
+                    counter.innerHTML = current + suffix;
+                }, 25);
+            });
+        }
+        window.addEventListener('load', animateCounters);
+    </script>
+</body>
+</html>
